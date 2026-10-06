@@ -1,6 +1,6 @@
 # GhatCPT
 
-ChatGPT 風格的課程聊天系統，使用 **DeepSeek Flash** 回答問題並檢索知識庫，後端資料儲存於 **PostgreSQL 16**。網站與 API 部署於 GPT Sites / Cloudflare Workers。
+課程聊天系統，使用 **DeepSeek Flash** 回答問題並檢索知識庫，後端資料儲存於 **PostgreSQL 16**。網站與 API 部署於 GPT Sites / Cloudflare Workers。
 
 - [正式網站](https://knowledge-chat-db-lab.davidsu881209.chatgpt.site/)（需具備 Site 存取權並登入）
 - [完整規格 SPEC](SPEC.md)
