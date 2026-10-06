@@ -1,0 +1,583 @@
+{
+  "id": "ff271ed5-9a22-40b9-b6a3-d8c14dcb0972",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "ghatcpt.BotKnowledge": {
+      "name": "BotKnowledge",
+      "schema": "ghatcpt",
+      "columns": {
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_botknowledge_kb": {
+          "name": "idx_botknowledge_kb",
+          "columns": [
+            {
+              "expression": "kb_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "BotKnowledge_bot_id_Chatbot_bot_id_fk": {
+          "name": "BotKnowledge_bot_id_Chatbot_bot_id_fk",
+          "tableFrom": "BotKnowledge",
+          "tableTo": "Chatbot",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "bot_id"
+          ],
+          "columnsTo": [
+            "bot_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "BotKnowledge_kb_id_KnowledgeBase_kb_id_fk": {
+          "name": "BotKnowledge_kb_id_KnowledgeBase_kb_id_fk",
+          "tableFrom": "BotKnowledge",
+          "tableTo": "KnowledgeBase",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "kb_id"
+          ],
+          "columnsTo": [
+            "kb_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "BotKnowledge_bot_id_kb_id_pk": {
+          "name": "BotKnowledge_bot_id_kb_id_pk",
+          "columns": [
+            "bot_id",
+            "kb_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "ghatcpt.Chatbot": {
+      "name": "Chatbot",
+      "schema": "ghatcpt",
+      "columns": {
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model_name": {
+          "name": "model_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "ghatcpt.MessageCitation": {
+      "name": "MessageCitation",
+      "schema": "ghatcpt",
+      "columns": {
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message_no": {
+          "name": "message_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_no": {
+          "name": "document_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_citation_document": {
+          "name": "idx_citation_document",
+          "columns": [
+            {
+              "expression": "kb_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "document_no",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "MessageCitation_conversation_id_message_no_Message_conversation_id_message_no_fk": {
+          "name": "MessageCitation_conversation_id_message_no_Message_conversation_id_message_no_fk",
+          "tableFrom": "MessageCitation",
+          "tableTo": "Message",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "conversation_id",
+            "message_no"
+          ],
+          "columnsTo": [
+            "conversation_id",
+            "message_no"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "MessageCitation_kb_id_document_no_Document_kb_id_document_no_fk": {
+          "name": "MessageCitation_kb_id_document_no_Document_kb_id_document_no_fk",
+          "tableFrom": "MessageCitation",
+          "tableTo": "Document",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "kb_id",
+            "document_no"
+          ],
+          "columnsTo": [
+            "kb_id",
+            "document_no"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "MessageCitation_conversation_id_message_no_kb_id_document_no_pk": {
+          "name": "MessageCitation_conversation_id_message_no_kb_id_document_no_pk",
+          "columns": [
+            "conversation_id",
+            "message_no",
+            "kb_id",
+            "document_no"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "ghatcpt.Conversation": {
+      "name": "Conversation",
+      "schema": "ghatcpt",
+      "columns": {
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_conversation_user": {
+          "name": "idx_conversation_user",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_conversation_bot": {
+          "name": "idx_conversation_bot",
+          "columns": [
+            {
+              "expression": "bot_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_conversation_created": {
+          "name": "idx_conversation_created",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "Conversation_user_id_User_user_id_fk": {
+          "name": "Conversation_user_id_User_user_id_fk",
+          "tableFrom": "Conversation",
+          "tableTo": "User",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "Conversation_bot_id_Chatbot_bot_id_fk": {
+          "name": "Conversation_bot_id_Chatbot_bot_id_fk",
+          "tableFrom": "Conversation",
+          "tableTo": "Chatbot",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "bot_id"
+          ],
+          "columnsTo": [
+            "bot_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "ghatcpt.Document": {
+      "name": "Document",
+      "schema": "ghatcpt",
+      "columns": {
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_no": {
+          "name": "document_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Document_kb_id_KnowledgeBase_kb_id_fk": {
+          "name": "Document_kb_id_KnowledgeBase_kb_id_fk",
+          "tableFrom": "Document",
+          "tableTo": "KnowledgeBase",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "kb_id"
+          ],
+          "columnsTo": [
+            "kb_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "Document_kb_id_document_no_pk": {
+          "name": "Document_kb_id_document_no_pk",
+          "columns": [
+            "kb_id",
+            "document_no"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "document_positive_no": {
+          "name": "document_positive_no",
+          "value": "\"ghatcpt\".\"Document\".\"document_no\">0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "ghatcpt.KnowledgeBase": {
+      "name": "KnowledgeBase",
+      "schema": "ghatcpt",
+      "columns": {
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "ghatcpt.Message": {
+      "name": "Message",
+      "schema": "ghatcpt",
+      "columns": {
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message_no": {
+          "name": "message_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Message_conversation_id_Conversation_conversation_id_fk": {
+          "name": "Message_conversation_id_Conversation_conversation_id_fk",
+          "tableFrom": "Message",
+          "tableTo": "Conversation",
+          "schemaTo": "ghatcpt",
+          "columnsFrom": [
+            "conversation_id"
+          ],
+          "columnsTo": [
+            "conversation_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "Message_conversation_id_message_no_pk": {
+          "name": "Message_conversation_id_message_no_pk",
+          "columns": [
+            "conversation_id",
+            "message_no"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "message_positive_no": {
+          "name": "message_positive_no",
+          "value": "\"ghatcpt\".\"Message\".\"message_no\">0"
+        },
+        "message_role": {
+          "name": "message_role",
+          "value": "\"ghatcpt\".\"Message\".\"role\" IN ('user','assistant','system')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "ghatcpt.User": {
+      "name": "User",
+      "schema": "ghatcpt",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_user_email": {
+          "name": "idx_user_email",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "user_name_nonempty": {
+          "name": "user_name_nonempty",
+          "value": "length(trim(\"ghatcpt\".\"User\".\"name\")) > 0"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "ghatcpt": "ghatcpt"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

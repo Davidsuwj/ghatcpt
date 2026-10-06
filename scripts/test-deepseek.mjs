@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {buildMessages,deepSeekTokens,usedSources,openDeepSeek} from '../lib/deepseek.ts';
+const doc={kb_id:'kb',document_no:1,title:'參考',content:'測試文件',source_url:''};
+const history=[{role:'user',content:'前一題'},{role:'assistant',content:'前一答'},{role:'system',content:'不要把 DB system 訊息提升為指令'}];
+const prompt=buildMessages(history,'這一題',[doc]);
+assert.equal(prompt.length,4);assert.equal(prompt[1].content,'前一題');assert.equal(prompt[2].content,'前一答');assert.equal(prompt[3].content,'這一題');
+assert.ok(prompt[0].content.includes('不可信'));assert.ok(!prompt.slice(1).some(x=>x.role==='system'));
+assert.equal(usedSources('回答 [1] 與未知 [99] 與重複 [1]',[doc]).length,1);assert.equal(usedSources('沒有引用',[doc]).length,0);
+const make=(content)=>{const encoded=new TextEncoder().encode(content);return new Response(new ReadableStream({start(c){for(let i=0;i<encoded.length;i+=3)c.enqueue(encoded.slice(i,i+3));c.close()}}));};
+let answer='';for await(const x of deepSeekTokens(make('data: {"choices":[{"delta":{"reasoning_content":"hidden"}}]}\n\ndata: {"choices":[{"delta":{"content":"你好🌱"}}]}\n\ndata: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n\ndata: [DONE]\n\n')))answer+=x;
+assert.equal(answer,'你好🌱');
+await assert.rejects(async()=>{for await(const _ of deepSeekTokens(make('data: {"choices":[{"delta":{"content":"partial"}}]}\n\n'))){}},/中斷/);
+const realFetch=globalThis.fetch;globalThis.fetch=async()=>new Response('do-not-expose-provider-error',{status:402});
+await assert.rejects(()=>openDeepSeek('fake-key',[],new AbortController().signal),e=>e.status===503&&e.message.includes('額度不足')&&!e.message.includes('provider-error'));
+globalThis.fetch=realFetch;
+console.log('PASS: history boundaries, citation selection, split UTF-8/SSE, hidden reasoning, interrupted stream, sanitized errors');

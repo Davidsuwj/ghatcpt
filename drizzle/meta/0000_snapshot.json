@@ -1,0 +1,525 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "02f2ac7e-fb9f-4ce7-b0ec-6b5bd1b8f420",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "BotKnowledge": {
+      "name": "BotKnowledge",
+      "columns": {
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_botknowledge_kb": {
+          "name": "idx_botknowledge_kb",
+          "columns": [
+            "kb_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "BotKnowledge_bot_id_Chatbot_bot_id_fk": {
+          "name": "BotKnowledge_bot_id_Chatbot_bot_id_fk",
+          "tableFrom": "BotKnowledge",
+          "tableTo": "Chatbot",
+          "columnsFrom": [
+            "bot_id"
+          ],
+          "columnsTo": [
+            "bot_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "BotKnowledge_kb_id_KnowledgeBase_kb_id_fk": {
+          "name": "BotKnowledge_kb_id_KnowledgeBase_kb_id_fk",
+          "tableFrom": "BotKnowledge",
+          "tableTo": "KnowledgeBase",
+          "columnsFrom": [
+            "kb_id"
+          ],
+          "columnsTo": [
+            "kb_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "BotKnowledge_bot_id_kb_id_pk": {
+          "columns": [
+            "bot_id",
+            "kb_id"
+          ],
+          "name": "BotKnowledge_bot_id_kb_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "Chatbot": {
+      "name": "Chatbot",
+      "columns": {
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "model_name": {
+          "name": "model_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "MessageCitation": {
+      "name": "MessageCitation",
+      "columns": {
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "message_no": {
+          "name": "message_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "document_no": {
+          "name": "document_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_citation_document": {
+          "name": "idx_citation_document",
+          "columns": [
+            "kb_id",
+            "document_no"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "MessageCitation_conversation_id_message_no_Message_conversation_id_message_no_fk": {
+          "name": "MessageCitation_conversation_id_message_no_Message_conversation_id_message_no_fk",
+          "tableFrom": "MessageCitation",
+          "tableTo": "Message",
+          "columnsFrom": [
+            "conversation_id",
+            "message_no"
+          ],
+          "columnsTo": [
+            "conversation_id",
+            "message_no"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "MessageCitation_kb_id_document_no_Document_kb_id_document_no_fk": {
+          "name": "MessageCitation_kb_id_document_no_Document_kb_id_document_no_fk",
+          "tableFrom": "MessageCitation",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "kb_id",
+            "document_no"
+          ],
+          "columnsTo": [
+            "kb_id",
+            "document_no"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "MessageCitation_conversation_id_message_no_kb_id_document_no_pk": {
+          "columns": [
+            "conversation_id",
+            "message_no",
+            "kb_id",
+            "document_no"
+          ],
+          "name": "MessageCitation_conversation_id_message_no_kb_id_document_no_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "Conversation": {
+      "name": "Conversation",
+      "columns": {
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {
+        "idx_conversation_user": {
+          "name": "idx_conversation_user",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        },
+        "idx_conversation_bot": {
+          "name": "idx_conversation_bot",
+          "columns": [
+            "bot_id"
+          ],
+          "isUnique": false
+        },
+        "idx_conversation_created": {
+          "name": "idx_conversation_created",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "Conversation_user_id_User_user_id_fk": {
+          "name": "Conversation_user_id_User_user_id_fk",
+          "tableFrom": "Conversation",
+          "tableTo": "User",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "Conversation_bot_id_Chatbot_bot_id_fk": {
+          "name": "Conversation_bot_id_Chatbot_bot_id_fk",
+          "tableFrom": "Conversation",
+          "tableTo": "Chatbot",
+          "columnsFrom": [
+            "bot_id"
+          ],
+          "columnsTo": [
+            "bot_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "Document": {
+      "name": "Document",
+      "columns": {
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "document_no": {
+          "name": "document_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Document_kb_id_KnowledgeBase_kb_id_fk": {
+          "name": "Document_kb_id_KnowledgeBase_kb_id_fk",
+          "tableFrom": "Document",
+          "tableTo": "KnowledgeBase",
+          "columnsFrom": [
+            "kb_id"
+          ],
+          "columnsTo": [
+            "kb_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "Document_kb_id_document_no_pk": {
+          "columns": [
+            "kb_id",
+            "document_no"
+          ],
+          "name": "Document_kb_id_document_no_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "document_positive_no": {
+          "name": "document_positive_no",
+          "value": "\"Document\".\"document_no\">0"
+        }
+      }
+    },
+    "KnowledgeBase": {
+      "name": "KnowledgeBase",
+      "columns": {
+        "kb_id": {
+          "name": "kb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "Message": {
+      "name": "Message",
+      "columns": {
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "message_no": {
+          "name": "message_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Message_conversation_id_Conversation_conversation_id_fk": {
+          "name": "Message_conversation_id_Conversation_conversation_id_fk",
+          "tableFrom": "Message",
+          "tableTo": "Conversation",
+          "columnsFrom": [
+            "conversation_id"
+          ],
+          "columnsTo": [
+            "conversation_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "Message_conversation_id_message_no_pk": {
+          "columns": [
+            "conversation_id",
+            "message_no"
+          ],
+          "name": "Message_conversation_id_message_no_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "message_positive_no": {
+          "name": "message_positive_no",
+          "value": "\"Message\".\"message_no\">0"
+        },
+        "message_role": {
+          "name": "message_role",
+          "value": "\"Message\".\"role\" IN ('user','assistant','system')"
+        }
+      }
+    },
+    "User": {
+      "name": "User",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_user_email": {
+          "name": "idx_user_email",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "user_name_nonempty": {
+          "name": "user_name_nonempty",
+          "value": "length(trim(\"User\".\"name\")) > 0"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
