@@ -91,6 +91,12 @@ messages 是該對話全部訊息，references 是該對話全部引用。citati
 
 body `{}`。KnowledgeBase 為空時加入共享模型、知識庫、文件、連結。成功 `{ok:true}`；已有知識庫回 409。不建立假 User 或假個人對話。
 
+## GET /api/ready
+
+不要求站內登入，仍受 Sites 存取權保護。只執行 `SELECT 1`，不讀取業務資料，不揭露主機、帳號、DB 名稱或錯誤內容。
+
+成功回傳 HTTP 200：`{"ok":true,"backend":"postgresql","connected":true}`；無法連線回 HTTP 503，`ok` 與 `connected` 為 false。回覆一律 `Cache-Control: no-store`。
+
 ## GET /api/health
 
 登入後執行一個 PostgreSQL SELECT，成功範例：

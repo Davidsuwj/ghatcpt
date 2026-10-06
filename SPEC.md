@@ -71,7 +71,7 @@ User 主鍵取自受信任的 Sites 登入主體。姓名及 email 由登入資�
 
 頁面：`/` 聊天與工作空間；`/login` 登入。
 
-API：`/api/data`、`/api/records`、`/api/chat`、`/api/stats`、`/api/seed`、`/api/health`。皆要求登入；所有寫入要求 JSON 並驗證 Origin。詳細 payload、狀態碼與串流格式：[API](docs/API.md)。
+API：`/api/data`、`/api/records`、`/api/chat`、`/api/stats`、`/api/seed`、`/api/health`。皆要求登入；所有寫入要求 JSON 並驗證 Origin。`/api/ready` 僅回報 DB 是否可連線，不回傳資料、連線設定或使用者身分；不要求站內登入，仍受 Sites 存取權保護。詳細 payload、狀態碼與串流格式：[API](docs/API.md)。
 
 ## 7. 非功能要求
 

@@ -61,7 +61,7 @@ node --env-file=.env.local scripts/migrate-postgres.mjs
 4. 執行型別、DB 約束及必要 API 驗證，產生 Workers build。
 5. 使用 Sites source repository credential push **同一份** source commit，依 Sites workflow 包裝 build。
 6. 保存該 commit 的 archive 版本並部署。確認原 URL、deployment succeeded 及正確 env revision。
-7. 登入 GET `/api/health`，確認 backend=postgresql、database=project_17、schema=ghatcpt、connected=true；檢查個人歷史與文件來源。
+7. GET `/api/ready` 確認正式 Worker 可連到 PostgreSQL；登入 GET `/api/health`，確認 backend=postgresql、database=project_17、schema=ghatcpt、connected=true；檢查個人歷史與文件來源。
 
 ```sh
 npm run typecheck

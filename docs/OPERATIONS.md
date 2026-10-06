@@ -48,6 +48,7 @@ pg_dump --format=custom --schema=ghatcpt --schema=ghatcpt_meta --file=/private/b
 
 ## 監測
 
+- GET `/api/ready`：僅確認 DB 連線是否可用，不讀取資料；仍需 Site 存取權。
 - 登入 GET `/api/health`：確認 backend、database、schema、connected。
 - Sites deployment status：確認 succeeded 和正確環境 revision。
 - Sites Worker logs：查失敗 route／錯誤碼，不收集完整聊天內容。
