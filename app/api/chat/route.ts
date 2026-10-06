@@ -12,7 +12,7 @@ async function saveExchange(id:string,question:string,answer:string,sources:Doc[
   db().prepare(`INSERT INTO "Message" (conversation_id,message_no,role,content,sent_at) SELECT ?,COALESCE(MAX(message_no),0)+1,'assistant',?,? FROM "Message" WHERE conversation_id=?`).bind(id,answer,now,id),
   ...sources.map(d=>db().prepare('INSERT INTO "MessageCitation" (conversation_id,message_no,kb_id,document_no) SELECT ?,MAX(message_no),?,? FROM "Message" WHERE conversation_id=?').bind(id,d.kb_id,d.document_no,id))
  ];
- await db().batch(statements,{conversationId:id});
+ await db().batch(statements);
  const saved=await db().batch([db().prepare('SELECT * FROM "Message" WHERE conversation_id=? ORDER BY message_no').bind(id),db().prepare('SELECT * FROM "MessageCitation" WHERE conversation_id=?').bind(id)]);
  return {ok:true,citations:sources.length,messages:saved[0].results,references:saved[1].results};
 }

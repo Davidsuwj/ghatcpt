@@ -14,5 +14,5 @@ export async function ensureDeepSeekModel() {
 // New shared knowledge bases are available on the next message, including old chats.
 export async function connectSharedKnowledge(botId:string) {
   if (![DEEPSEEK_BOT,"bot-db","bot-guide"].includes(botId)) return;
-  await db().prepare('INSERT INTO "BotKnowledge" (bot_id,kb_id) SELECT ?,kb_id FROM "KnowledgeBase" ON CONFLICT DO NOTHING').bind(botId).run();
+  await db().prepare('INSERT INTO "BotKnowledge" (bot_id,kb_id) SELECT ?,kb_id FROM "KnowledgeBase" WHERE true ON CONFLICT DO NOTHING').bind(botId).run();
 }

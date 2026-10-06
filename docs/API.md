@@ -73,7 +73,7 @@ messages 是該對話全部訊息，references 是該對話全部引用。citati
 
 上例陣列只展示格式；實際 done 附完整對話與引用。串流開始前的錯誤使用 HTTP 狀態碼；開始後錯誤為 NDJSON `{"type":"error","error":"...","status":503}`，即使 HTTP 已為 200，client 仍須將 error 視為失敗。只有收到 done 才能視為已完成保存。
 
-生成完成才開啟 PostgreSQL transaction，依序保存 user、assistant、有效引用。失敗不保存半段回覆。串流斷線與回覆保存之間仍可能有網路競態，client 重讀 `/api/data` 後再決定重送。此版本沒有 idempotency key。
+生成完成才開啟 D1 batch，依序保存 user、assistant、有效引用。失敗不保存半段回覆。串流斷線與回覆保存之間仍可能有網路競態，client 重讀 `/api/data` 後再決定重送。此版本沒有 idempotency key。
 
 ## GET /api/stats
 
@@ -95,17 +95,17 @@ body `{}`。KnowledgeBase 為空時加入共享模型、知識庫、文件、連
 
 不要求站內登入，仍受 Sites 存取權保護。只執行 `SELECT 1`，不讀取業務資料，不揭露主機、帳號、DB 名稱或錯誤內容。
 
-成功回傳 HTTP 200：`{"ok":true,"backend":"postgresql","connected":true}`；無法連線回 HTTP 503，`ok` 與 `connected` 為 false。回覆一律 `Cache-Control: no-store`。
+成功回傳 HTTP 200：`{"ok":true,"backend":"d1","connected":true}`；無法連線回 HTTP 503，`ok` 與 `connected` 為 false。回覆一律 `Cache-Control: no-store`。
 
 ## GET /api/health
 
-登入後執行一個 PostgreSQL SELECT，成功範例：
+登入後執行一個 D1 SELECT，成功範例：
 
 ```json
-{"ok":true,"backend":"postgresql","database":"project_17","schema":"ghatcpt","connected":true}
+{"ok":true,"backend":"d1","binding":"DB","connected":true}
 ```
 
-失敗回 503。只提供 DB／schema 與連通狀態，不提供密碼、SQL 或資料內容。
+失敗回 503。只提供 backend、binding 與連通狀態，不提供密碼、SQL 或資料內容。
 
 ## 錯誤契約
 
@@ -124,4 +124,4 @@ body `{}`。KnowledgeBase 為空時加入共享模型、知識庫、文件、連
 | 503 | DB 故障、AI 不可用、key 不可用／額度不足、空回覆、保存失敗 |
 | 504 | AI 等候逾時 |
 
-不回傳 provider 原始錯誤、PostgreSQL SQL 或堆疊。API 個人資料回覆使用 no-store。
+不回傳 provider 原始錯誤、SQL 或堆疊。API 個人資料回覆使用 no-store。

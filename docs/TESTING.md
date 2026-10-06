@@ -2,51 +2,33 @@
 
 ## 自動檢查
 
-| 檢查 | 命令 | DB / 外部 API |
-| --- | --- | --- |
-| TypeScript | npm run typecheck | 無 |
-| DeepSeek SSE、引用、歷史邊界 | npm test | 模擬 provider，不呼叫外部 |
-| PG 參數、完整性、交易、并行與 cascade | node --env-file=.env.local scripts/test-postgres.mjs | 連指定 PG；建立／清理自建資料 |
-| 全部 API、登入、IDOR、CRUD、統計 | npm run test:api | 本機 Worker + 指定 PG + 真實 DeepSeek |
-| 串流、上下文、重新讀取 | npm run test:ai | 本機 Worker + 指定 PG + 真實 DeepSeek |
-| 新 KB、長文件末尾、追問、歷史相容 | npm run test:retrieval | 同上 |
-| Workers build | npm run build | 無業務 DB 查詢 |
+```sh
+npm run typecheck
+npm test
+npm run test:db
+npm run build
+```
 
-Node 24 可直接執行測試引用的可擦除 TypeScript 模組。DB 設定載入自 `.env.local`，API 測試的 server 固定 `localhost:5173`；需另開終端執行 `npm run dev`。
+- TypeScript 檢查 API 與 D1 binding 型別。
+- 解析器測試模擬 DeepSeek provider，涵蓋串流、UTF-8、上下文及引用。
+- test:db 在隔離 Miniflare D1 套用正式 drizzle/ SQL，檢查並行序號、assistant 引用限制、文件與知識庫連結保護、非法角色、整批回滾、每日統計及刪除級聯。
+- 建置驗證 Workers 輸出，不讀取正式資料。
 
-## Fixture 與資料清理
+D1 測試已在本機通過。GitHub 現有授權沒有 workflow 寫入權限，因此 .github/workflows/ci.yml 暫時保留舊 PostgreSQL CI；它不代表 D1 整合測試。已準備 docs/ci-d1.example.yml，取得 workflow 權限後可替換。該範本只使用 Node 24 與隔離 D1，不需要正式 DB 密碼或 AI key。
 
-`test-postgres.mjs` 自建 UUID 前綴資料，finally 刪除自己的對話、引用、文件、KB、bot、User。這個測試可用空 DB（先 migration），不依賴教學資料。
+## API 與 AI 實測
 
-`test-api.mjs` 沿用跨使用者 fixture：`u-demo-1`、`conv-demo-1` 與其已保存訊息。正式從 D1 移轉的 DB 保留這些歷史資料；空測試 DB 可另以 db/seed.ts 的歷史 fixture 準備隔離測試資料。不可把假人／假對話透過一般 seed API 注入正式帳號清單。
+啟動本機預覽後使用 test:ai、test:retrieval；需要有效 DeepSeek key，會產生少量 provider 用量。測試只應連本機 D1 副本，並清理自己建立的測試資料。
 
-API / AI / 檢索測試在本機模擬登入下建立測試資料並清除對話、模型與文件；User 自動同步資料可能仍存在。測試異常中止可能留下資料，清理時只選擇已記錄的測試 ID，勿刪除真實對話。正式切換驗證完成後已清理自建測試資料。
+歷史 test:api 依賴 u-demo-1、conv-demo-1 等跨使用者 fixture，不能在空 DB 直接當作通過條件。歷史 PostgreSQL 整合測試僅供追溯，不是現行 CI。
 
-## GitHub Actions
+## 本次資料移轉驗證
 
-`.github/workflows/ci.yml` 使用 Node 24 與 PostgreSQL 16 service，參數為該隔離 CI container 的測試設定。流程：npm ci → typecheck → parser tests → migration → PostgreSQL integration → build。
+- 在來源 PG 鎖定八表期間匯出一致快照，保留原 D1 備份。
+- 檢查 D1 沒有 PG 缺少的記錄後同步，逐筆核對完整欄位與內容。
+- 確認正式部署使用 D1，最後才 DROP 指定 PG 表，保留 public 與歷史管理表。
+- 驗證紀錄放在交付檔 d1-restoration.json；私人快照不提交 repo。
 
-CI 不使用課程 PostgreSQL、Sites 部署 token 或 DeepSeek key。真實 AI 操作由明確配置環境的人另外驗證。CI 通過不能證明正式網路或 provider 額度正常，需部署後 health。
+## 使用驗收
 
-## 2026-10-06 實測結果
-
-- 八個業務表均匯入 PostgreSQL，主鍵、欄位與內容逐表一致。
-- 33 個 API 回歸檢查通過：登入、同源、擁有者、CRUD、FK／引用、序號、並行、統計、cascade。
-- 7 個 PostgreSQL 整合條件通過：bound parameters、並行連續序號、assistant 引用、文件保護、連結保護、整批 rollback、cascade。
-- DeepSeek Flash 串流 73 個內容區塊，回覆／引用成功保存，上下文追問成功。此次耗時不代表 latency SLA。
-- 新 KB 無需手動新增內建 BotKnowledge 即可檢索；長文件尾端私有測試代號命中，追問仍引用同一來源。
-- 歷史助理 ID 呼叫相同 DeepSeek model，試驗後對話／引用完整清理。
-
-## 手動驗收
-
-1. 未登入進入 `/login`；登入後帳號名稱正確，個人歷史可載入。
-2. 新對話 model 選單只有 DeepSeek Flash。
-3. 問一般問題，確認串流、Markdown、複製；問文件問題，確認來源與資料管理的文件一致。
-4. 追問上一題，確認模型能引用上下文；輸入中文選字時 Enter 不應提前送出。
-5. 在長對話向上閱讀，生成新內容時不強制跳到底；返回最新按鈕有效。
-6. 左側「⋯」更名與刪除；取消確認保留記錄，確認後歷史、Message、MessageCitation 一併清除。
-7. 使用另一個已允許帳號，確認看不到第一位的對話；共享 KB 可見。
-8. health 回傳 PostgreSQL 連通；DB 不可用／AI 額度不足時顯示可重試錯誤。
-9. 行動尺寸側欄可開關，表單、來源面板與輸入框不超出畫面。
-
-發生新錯誤或 schema 改動時重跑相關測試；一般文案修改不必呼叫真實 AI。
+登入、個人歷史、新對話、串流回答、引用來源、知識庫 CRUD、統計、更名與刪除、登出。另一使用者不能讀寫他人的對話。/api/ready 與登入後 /api/health 均應回傳 backend=d1。

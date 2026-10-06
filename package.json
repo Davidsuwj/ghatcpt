@@ -13,11 +13,12 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "node --env-file=.env.local scripts/migrate-postgres.mjs",
+    "db:migrate": "node scripts/migrate-d1-local.mjs",
     "test": "node scripts/test-deepseek.mjs",
     "test:api": "node scripts/test-api.mjs",
     "test:ai": "node scripts/test-ai-live.mjs",
-    "test:retrieval": "node scripts/test-retrieval-live.mjs"
+    "test:retrieval": "node scripts/test-retrieval-live.mjs",
+    "test:db": "node scripts/test-d1.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -1,7 +1,9 @@
 import { db } from "@/db/raw";
+import { env } from "cloudflare:workers";
 import { getChatGPTUser } from "@/app/chatgpt-auth";
 export class HttpError extends Error{constructor(public status:number,message:string){super(message)}}
 export async function guard(request:Request,write=false){
+ if(env.MAINTENANCE_MODE==="1")throw new HttpError(503,"資料移轉中，請稍後再試。");
  const user=await getChatGPTUser();if(!user)throw new HttpError(401,"請先登入。");
  if(write){const origin=request.headers.get("origin");if(origin && origin!==new URL(request.url).origin)throw new HttpError(403,"不接受跨站操作。");if(!request.headers.get("content-type")?.includes("application/json"))throw new HttpError(415,"請使用 JSON 格式。");}
  return user;
@@ -12,10 +14,10 @@ export function fail(error:unknown){
  const code=typeof error==="object"&&error!==null&&"code" in error?String(error.code):"unknown";
  const message=error instanceof Error?error.message:"";
  console.error("Database/API operation failed",{code});
- if(code==="23505")return Response.json({error:"編號、電子郵件或這筆關聯已存在。"},{status:409});
- if(code==="23503")return Response.json({error:"資料仍被使用或參照的資料不存在。請先檢查對話、文件與關聯。"},{status:409});
+ if(message.includes("UNIQUE constraint failed"))return Response.json({error:"編號、電子郵件或這筆關聯已存在。"},{status:409});
+ if(message.includes("FOREIGN KEY constraint failed"))return Response.json({error:"資料仍被使用或參照的資料不存在。請先檢查對話、文件與關聯。"},{status:409});
  if(["citation_rule","linked_knowledge","cited_message"].some(rule=>message.includes(rule)))return Response.json({error:"引用規則不允許此操作，請先處理既有引用。"},{status:409});
- if(code==="23514"||code==="23502")return Response.json({error:"資料不符合欄位限制，請檢查序號與角色。"},{status:400});
+ if(message.includes("CHECK constraint failed")||message.includes("NOT NULL constraint failed"))return Response.json({error:"資料不符合欄位限制，請檢查序號與角色。"},{status:400});
  return Response.json({error:"資料暫時無法讀取或儲存，輸入內容已保留，請稍後再試。"},{status:503});
 }
 
